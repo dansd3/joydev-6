@@ -1,95 +1,77 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import { useState, useEffect, useMemo } from 'react';
+import { TodoInput } from '../components/TodoInput/TodoInput';
+import { Button } from '../components/Button/Button';
+import { Column } from '../components/Column/Column';
+import { Modal } from '../components/Modal/Modal';
+import styles from './page.module.scss';
 
-export default function Home() {
+interface Task {
+  id: string;
+  title: string;
+  status: 'to do' | 'in progress' | 'done';
+}
+
+export default function TodoPage() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [newTask, setNewTask] = useState('');
+  const [selectedTask, setSelectedTask] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const statusList = useMemo(() => ['to do', 'in progress', 'done'], []);
+
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('tasks');
+    setTasks(savedTasks ? JSON.parse(savedTasks) : []);
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+  }, [tasks]);
+
+  const addTask = () => {
+    if (newTask.trim()) {
+      setTasks([...tasks, { id: crypto.randomUUID(), title: newTask.trim(), status: 'to do' }]);
+      setNewTask('');
+    }
+  };
+
+  const deleteTask = (id: string) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+    setSelectedTask(null);
+  };
+
+  const moveTask = (id: string, newStatus: Task['status']) => {
+    setTasks(tasks.map((task) => (task.id === id ? { ...task, status: newStatus } : task)));
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>, status: Task['status']) => {
+    event.preventDefault();
+    const id = event.dataTransfer.getData('text');
+    moveTask(id, status);
+  };
+
   return (
     <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      <div className={styles.page__input}>
+        <TodoInput value={newTask} onChange={setNewTask} className={styles.page__inputField} />
+        <Button variant="primary" icon="plus" label="Добавить" onClick={addTask} />
+      </div>
+      <div className={styles.page__board}>
+        {statusList.map((status) => (
+          <Column
+            key={status}
+            status={status as Task['status']}
+            tasks={tasks}
+            onDrop={(e) => handleDrop(e, status as Task['status'])}
+            onDelete={setSelectedTask}
+            onDragStart={(id, e) => e.dataTransfer.setData('text', id)}
           />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        ))}
+      </div>
+      {selectedTask !== null && <Modal onConfirm={() => deleteTask(selectedTask)} onCancel={() => setSelectedTask(null)} />}
     </div>
   );
 }

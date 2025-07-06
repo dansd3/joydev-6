@@ -1,0 +1,24 @@
+.page {
+  padding: 24px;
+  width: 100%;
+  &__title {
+    margin-bottom: 16px;
+  }
+
+  &__input {
+    display: flex;
+    gap: 12px;
+    max-width: 500px;
+    margin-bottom: 24px;
+
+    &Field {
+      flex-grow: 1;
+    }
+  }
+
+  &__board {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+  }
+}

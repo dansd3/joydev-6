@@ -1,0 +1,37 @@
+@mixin heading-style($weight, $font_size, $line_height, $margin_top, $letter_spacing, $text_color) {
+  font-weight: $weight;
+  font-size: $font_size;
+  line-height: $line_height;
+  margin-top: $margin_top;
+  letter-spacing: $letter_spacing;
+  color: $text_color;
+}
+
+@mixin text-style($weight, $font_size, $line_height, $letter_spacing, $text_color) {
+  font-weight: $weight;
+  font-size: $font_size;
+  line-height: $line_height;
+  letter-spacing: $letter_spacing;
+  color: $text_color;
+}
+
+@mixin paragraph-style($font-size, $line-height, $margin-top, $letter-spacing) {
+  font-size: $font-size;
+  line-height: $line-height;
+  margin-top: $margin-top;
+  letter-spacing: $letter-spacing;
+}
+
+@mixin button-style($text-color, $bg1, $bg2, $border-color) {
+  color: $text-color;
+  background: linear-gradient(360deg, $bg1 0%, $bg2 100%);
+  border: 1px solid $border-color;
+}
+
+@mixin trim-style() {
+  width: 3px;
+  height: 100%;
+  flex-shrink: 0;
+  left: 0px;
+  position: absolute;
+}

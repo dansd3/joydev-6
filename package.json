@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@svgr/webpack": "^8.1.0",
+    "classnames": "^2.5.1",
     "mobx": "^6.13.7",
     "mobx-react-lite": "^4.1.0",
     "next": "15.3.5",
@@ -22,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
+    "sass": "^1.89.2",
     "typescript": "^5"
   }
 }
