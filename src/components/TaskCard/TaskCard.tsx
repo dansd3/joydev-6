@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '../Card/Card';
 import { Text } from '../Text/Text';
-import CloseIcon from '../Icons/CloseIcon.svg'; 
+import CloseIcon from '../Icons/CloseIcon.svg';
 import styles from './TaskCard.module.scss';
 
 interface TaskCardProps {
@@ -16,7 +16,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ title, onDelete, onDragStart
     <div className={styles.taskCard} draggable onDragStart={onDragStart}>
       <Card elevation={1} className={styles.taskCard__card}>
         <div className={styles.taskCard__content}>
-          <Text size={400} className={styles.taskCard__text}>{title}</Text>
+          <Text size={400} className={styles.taskCard__text}>
+            {title}
+          </Text>
           <CloseIcon className={styles.taskCard__closeIcon} onClick={onDelete} />
         </div>
       </Card>

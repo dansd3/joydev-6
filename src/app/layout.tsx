@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import "../styles/index.scss";
+import type { Metadata } from 'next';
+import '../styles/index.scss';
 
 export const metadata: Metadata = {
   title: 'Todo Kanban Board',

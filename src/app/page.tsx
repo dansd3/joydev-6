@@ -1,77 +1,59 @@
-'use client'
+'use client';
 import { useState, useEffect, useMemo } from 'react';
-import { TodoInput } from '../components/TodoInput/TodoInput';
-import { Button } from '../components/Button/Button';
-import { Column } from '../components/Column/Column';
-import { Modal } from '../components/Modal/Modal';
+import { ColumnHOC } from '../components/ColumnHOC/ColumnHOC';
+import { InputHOC } from '../components/TodoInputHOC/TodoInputHOC';
+import { ButtonHOC } from '../components/ButtonHOC/ButtonHOC';
+import { ModalHOC } from '../components/ModalHOC/ModalHOC';
+import { TasksStoreProvider, useTasksStore } from '../context/TasksStoreContext';
 import styles from './page.module.scss';
 
+type TaskStatus = 'to do' | 'in progress' | 'done';
 interface Task {
   id: string;
   title: string;
   status: 'to do' | 'in progress' | 'done';
 }
 
-export default function TodoPage() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [newTask, setNewTask] = useState('');
-  const [selectedTask, setSelectedTask] = useState<string | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+const TodoPageContent = () => {
+  const [inputValue, setInputValue] = useState('');
+  const tasksStore = useTasksStore();
   const statusList = useMemo(() => ['to do', 'in progress', 'done'], []);
 
   useEffect(() => {
-    const savedTasks = localStorage.getItem('tasks');
-    setTasks(savedTasks ? JSON.parse(savedTasks) : []);
-    setIsLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('tasks', JSON.stringify(tasks));
+    try {
+      const storedTasks = localStorage.getItem('tasks');
+      if (storedTasks) {
+        const parsedTasks: Task[] = JSON.parse(storedTasks);
+        tasksStore.setTasks(parsedTasks);
+      } else {
+        tasksStore.setTasks([]);
+      }
+    } catch (error) {
+      console.error('Error loading tasks from localStorage:', error);
+      tasksStore.setTasks([]);
     }
-  }, [tasks]);
-
-  const addTask = () => {
-    if (newTask.trim()) {
-      setTasks([...tasks, { id: crypto.randomUUID(), title: newTask.trim(), status: 'to do' }]);
-      setNewTask('');
-    }
-  };
-
-  const deleteTask = (id: string) => {
-    setTasks(tasks.filter((task) => task.id !== id));
-    setSelectedTask(null);
-  };
-
-  const moveTask = (id: string, newStatus: Task['status']) => {
-    setTasks(tasks.map((task) => (task.id === id ? { ...task, status: newStatus } : task)));
-  };
-
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>, status: Task['status']) => {
-    event.preventDefault();
-    const id = event.dataTransfer.getData('text');
-    moveTask(id, status);
-  };
+  }, [tasksStore]);
 
   return (
     <div className={styles.page}>
       <div className={styles.page__input}>
-        <TodoInput value={newTask} onChange={setNewTask} className={styles.page__inputField} />
-        <Button variant="primary" icon="plus" label="Добавить" onClick={addTask} />
+        <InputHOC className={styles.page__inputField} onChange={setInputValue} />
+        <ButtonHOC variant="primary" icon="plus" label="Добавить" inputValue={inputValue} />
       </div>
       <div className={styles.page__board}>
         {statusList.map((status) => (
-          <Column
-            key={status}
-            status={status as Task['status']}
-            tasks={tasks}
-            onDrop={(e) => handleDrop(e, status as Task['status'])}
-            onDelete={setSelectedTask}
-            onDragStart={(id, e) => e.dataTransfer.setData('text', id)}
-          />
+          <ColumnHOC key={status} status={status as TaskStatus} />
         ))}
       </div>
-      {selectedTask !== null && <Modal onConfirm={() => deleteTask(selectedTask)} onCancel={() => setSelectedTask(null)} />}
+      <ModalHOC />
     </div>
+  );
+};
+
+export default function TodoPage() {
+  return (
+    <TasksStoreProvider>
+      <TodoPageContent />
+    </TasksStoreProvider>
   );
 }

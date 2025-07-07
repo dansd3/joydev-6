@@ -6,14 +6,19 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate",
+    "format": "prettier -w ."
   },
   "dependencies": {
+    "@prisma/client": "^6.11.1",
     "@svgr/webpack": "^8.1.0",
     "classnames": "^2.5.1",
     "mobx": "^6.13.7",
     "mobx-react-lite": "^4.1.0",
     "next": "15.3.5",
+    "prettier": "^3.6.2",
+    "prisma": "^6.11.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

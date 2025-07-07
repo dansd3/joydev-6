@@ -12,7 +12,9 @@ export const TodoInput = ({ value, onChange, className }: InputProps) => {
     <input
       type="text"
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => {
+        onChange(e.target.value);
+      }}
       placeholder="Введите название задачи"
       className={classNames(styles.input, className)}
     />
