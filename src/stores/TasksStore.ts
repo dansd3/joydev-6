@@ -14,42 +14,56 @@ class TasksStore {
 
   constructor() {
     makeAutoObservable(this);
-    this.loadTasks();
   }
 
-  loadTasks() {
-    const savedTasks = localStorage.getItem('tasks');
-    if (savedTasks) {
-      this.tasks = JSON.parse(savedTasks);
-    }
+  setTasks(tasks: Task[]) {
+    this.tasks = tasks.filter((task) => task.id && task.title && ['to do', 'in progress', 'done'].includes(task.status));
     this.isLoaded = true;
   }
 
-  saveTasks() {
-    if (this.isLoaded) {
+  private saveTasks() {
+    try {
       localStorage.setItem('tasks', JSON.stringify(this.tasks));
+    } catch (error) {
+      console.error('Error saving tasks to localStorage:', error);
     }
   }
 
   addTask() {
-    if (this.newTask.trim()) {
-      this.tasks.push({ id: crypto.randomUUID(), title: this.newTask.trim(), status: 'to do' });
-      this.newTask = '';
+    if (this.newTask && this.newTask.trim()) {
+      const newTask = {
+        id: crypto.randomUUID(),
+        title: this.newTask.trim(),
+        status: 'to do' as const,
+      };
+      this.tasks = [...this.tasks, newTask];
       this.saveTasks();
+    } else {
+      console.error('newTask is empty or invalid:', this.newTask);
     }
   }
 
   deleteTask(id: string) {
-    this.tasks = this.tasks.filter((task) => task.id !== id);
-    this.selectedTask = null;
-    this.saveTasks();
+    try {
+      this.tasks = this.tasks.filter((task) => task.id !== id);
+      this.selectedTask = null;
+      this.saveTasks();
+    } catch (error) {
+      console.error('Error deleting tasks:', error);
+    }
   }
 
   moveTask(id: string, newStatus: Task['status']) {
-    const task = this.tasks.find((t) => t.id === id);
-    if (task) {
-      task.status = newStatus;
-      this.saveTasks();
+    try {
+      const taskIndex = this.tasks.findIndex((t) => t.id === id);
+      if (taskIndex !== -1) {
+        const newTasks = [...this.tasks];
+        newTasks[taskIndex].status = newStatus;
+        this.tasks = newTasks;
+        this.saveTasks();
+      }
+    } catch (error) {
+      console.error('Error moving tasks:', error);
     }
   }
 
@@ -62,4 +76,4 @@ class TasksStore {
   }
 }
 
-export const tasksStore = new TasksStore();
+export const createTasksStore = () => new TasksStore();
