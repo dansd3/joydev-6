@@ -76,4 +76,4 @@ class TasksStore {
   }
 }
 
-export const createTasksStore = () => new TasksStore();
+export const tasksStore = new TasksStore();

@@ -1,22 +1,21 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
-import { ColumnHOC } from '../components/ColumnHOC/ColumnHOC';
-import { InputHOC } from '../components/TodoInputHOC/TodoInputHOC';
-import { ButtonHOC } from '../components/ButtonHOC/ButtonHOC';
-import { ModalHOC } from '../components/ModalHOC/ModalHOC';
-import { TasksStoreProvider, useTasksStore } from '../context/TasksStoreContext';
+import { useEffect, useMemo } from 'react';
+import { ColumnWithStore } from '../components/ColumnHOC/ColumnHOC';
+import { InputWithStore } from '../components/TodoInputHOC/TodoInputHOC';
+import { ButtonWithSetNewTask } from '../components/ButtonHOC/ButtonHOC';
+import { ModalWithDelete } from '../components/ModalHOC/ModalHOC';
 import styles from './page.module.scss';
+import { tasksStore } from '../stores/TasksStore';
 
 type TaskStatus = 'to do' | 'in progress' | 'done';
 interface Task {
   id: string;
   title: string;
-  status: 'to do' | 'in progress' | 'done';
+  status: TaskStatus;
 }
 
-const TodoPageContent = () => {
-  const [inputValue, setInputValue] = useState('');
-  const tasksStore = useTasksStore();
+export default function TodoPage() {
+  
   const statusList = useMemo(() => ['to do', 'in progress', 'done'], []);
 
   useEffect(() => {
@@ -32,28 +31,20 @@ const TodoPageContent = () => {
       console.error('Error loading tasks from localStorage:', error);
       tasksStore.setTasks([]);
     }
-  }, [tasksStore]);
+  }, []);
 
   return (
     <div className={styles.page}>
       <div className={styles.page__input}>
-        <InputHOC className={styles.page__inputField} onChange={setInputValue} />
-        <ButtonHOC variant="primary" icon="plus" label="Добавить" inputValue={inputValue} />
+        <InputWithStore />
+        <ButtonWithSetNewTask variant="primary" icon="plus" label="Добавить" />
       </div>
       <div className={styles.page__board}>
         {statusList.map((status) => (
-          <ColumnHOC key={status} status={status as TaskStatus} />
+          <ColumnWithStore key={status} status={status as TaskStatus} />
         ))}
       </div>
-      <ModalHOC />
+      <ModalWithDelete />
     </div>
-  );
-};
-
-export default function TodoPage() {
-  return (
-    <TasksStoreProvider>
-      <TodoPageContent />
-    </TasksStoreProvider>
   );
 }

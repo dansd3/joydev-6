@@ -1,26 +1,21 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { useTasksStore } from '../../context/TasksStoreContext';
+import { tasksStore } from '../../stores/TasksStore';
+import { ComponentType } from 'react';
 import { Button } from '../Button/Button';
 
-type ButtonVariant = 'primary' | 'danger' | 'regular' | 'minimal' | 'disabled' | 'active';
-type ButtonIcon = 'plus' | 'caret';
-
-interface ButtonHOCProps {
-  variant: ButtonVariant;
-  icon?: ButtonIcon;
-  label: string;
-  className?: string;
-  inputValue?: string;
+interface withButtonSetTaskProps {
+  onClick: () => void;
 }
 
-export const ButtonHOC: React.FC<ButtonHOCProps> = observer(({ variant, icon, label, className, inputValue }) => {
-  const tasksStore = useTasksStore();
-  const handleClick = () => {
-    if (inputValue) {
-      tasksStore.setNewTask(inputValue);
+function withButtonSetTask<P extends object>(WrappedButton: ComponentType<P & withButtonSetTaskProps>): React.FC<P> {
+  return observer(function ButtonWrapper(props: P) {
+    
+    const handleClick = () => {
       tasksStore.addTask();
-    }
-  };
-  return <Button variant={variant} icon={icon} label={label} className={className} onClick={handleClick} />;
-});
+    };
+
+    return <WrappedButton {...props} onClick={handleClick} />;
+  });
+}
+
+export const ButtonWithSetNewTask = withButtonSetTask(Button);

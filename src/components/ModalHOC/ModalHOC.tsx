@@ -1,10 +1,28 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { useTasksStore } from '../../context/TasksStoreContext';
+import { tasksStore } from '../../stores/TasksStore';
+import { ComponentType } from 'react';
 import { Modal } from '../Modal/Modal';
 
-export const ModalHOC: React.FC = observer(() => {
-  const tasksStore = useTasksStore();
-  if (tasksStore.selectedTask === null) return null;
-  return <Modal onConfirm={() => tasksStore.deleteTask(tasksStore.selectedTask!)} onCancel={() => tasksStore.setSelectedTask(null)} />;
-});
+interface ModalProps {
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+function withModalDelete<P extends object>(WrappedModal: ComponentType<P & ModalProps>): React.FC<P> {
+  return observer(function ModalWrapper(props: P) {
+    
+    if (tasksStore.selectedTask === null) return null;
+
+    const handleConfirm = () => {
+      tasksStore.deleteTask(tasksStore.selectedTask!)
+    };
+
+    const handleCancel = () => {
+      tasksStore.setSelectedTask(null)
+    };
+
+    return <WrappedModal {...props} onConfirm={handleConfirm} onCancel={handleCancel} />;
+  });
+}
+
+export const ModalWithDelete = withModalDelete(Modal);

@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { tasksStore } from '../../stores/TasksStore';
+import { ComponentType } from 'react';
 import { TodoInput } from '../TodoInput/TodoInput';
 
-interface InputHOCProps {
+interface InputProps {
+  value: string;
+  onChange: (value: string) => void;
   className?: string;
-  onChange?: (value: string) => void;
 }
 
-export const InputHOC: React.FC<InputHOCProps> = observer(({ className, onChange }) => {
-  const [inputValue, setInputValue] = useState('');
+function withInputStore<P extends object>(WrappedInput: ComponentType<P & InputProps>): React.FC<P> {
+  return observer(function InputWrapper(props: P) {
+    const [inputValue, setInputValue] = useState(tasksStore.newTask);
 
-  const onChangeHandler = (value: string) => {
-    setInputValue(value);
-    if (onChange) onChange(value);
-  };
-  return <TodoInput value={inputValue} onChange={onChangeHandler} className={className} />;
-});
+    const handleChange = (value: string) => {
+      setInputValue(value);
+      tasksStore.setNewTask(value);
+    };
+
+    return <WrappedInput {...props} value={inputValue} onChange={handleChange} />;
+  });
+}
+
+export const InputWithStore = withInputStore(TodoInput);
