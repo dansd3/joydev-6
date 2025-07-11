@@ -1,0 +1,44 @@
+@use '../../styles/variables' as variables;
+@use '../../styles/mixins' as mixins;
+
+.heading {
+  font-family: variables.$font-display;
+  padding: 0;
+  margin: 0px;
+  &--size-900 {
+    @include mixins.heading-style(900, 35px, 40px, 52px, -0.24px, variables.$color-default);
+  }
+
+  &--size-800 {
+    @include mixins.heading-style(800, 29px, 32px, 40px, -0.24px, variables.$color-dark);
+  }
+
+  &--size-700 {
+    @include mixins.heading-style(700, 24px, 28px, 28px, -0.06px, variables.$color-dark);
+  }
+
+  &--size-600 {
+    @include mixins.heading-style(600, 20px, 24px, 24px, -0.06px, variables.$color-dark);
+  }
+
+  &--size-500 {
+    @include mixins.heading-style(500, 16px, 20px, 16px, -0.05px, variables.$color-dark);
+  }
+
+  &--size-400 {
+    @include mixins.heading-style(400, 14px, 20px, 16px, -0.05px, variables.$color-dark);
+  }
+
+  &--size-300 {
+    @include mixins.heading-style(300, 12px, 16px, 16px, 0px, variables.$color-dark);
+  }
+
+  &--size-200 {
+    @include mixins.heading-style(200, 12px, 16px, 16px, 0px, variables.$color-muted);
+  }
+
+  &--size-100 {
+    @include mixins.heading-style(100, 11px, 16px, 16px, 0.3px, variables.$color-muted);
+    text-transform: uppercase;
+  }
+}

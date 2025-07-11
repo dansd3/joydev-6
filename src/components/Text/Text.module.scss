@@ -1,0 +1,48 @@
+@use '../../styles/variables' as variables;
+@use '../../styles/mixins' as mixins;
+
+.text {
+  font-family: variables.$font-text;
+  margin: 0;
+  &--size--300-default {
+    @include mixins.text-style(400, 12px, 16px, 0px, variables.$color-default);
+  }
+
+  &--size--300-medium {
+    @include mixins.text-style(500, 12px, 16px, 0px, variables.$color-default);
+  }
+
+  &--size--300-semibold {
+    @include mixins.text-style(600, 12px, 16px, 0px, variables.$color-default);
+  }
+
+  &--size--400-default {
+    @include mixins.text-style(400, 14px, 20px, -0.05px, variables.$color-default);
+  }
+
+  &--size--400-medium {
+    @include mixins.text-style(500, 14px, 20px, -0.05px, variables.$color-default);
+  }
+
+  &--size--400-semibold {
+    @include mixins.text-style(600, 14px, 20px, -0.05px, variables.$color-default);
+  }
+
+  &--size--500-default {
+    @include mixins.text-style(400, 16px, 20px, -0.05px, variables.$color-default);
+  }
+
+  &--size--500-medium {
+    @include mixins.text-style(500, 16px, 20px, -0.05px, variables.$color-default);
+  }
+
+  &--size--500-semibold {
+    @include mixins.text-style(600, 16px, 20px, -0.05px, variables.$color-default);
+  }
+
+  &--link {
+    color: variables.$color-link;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
